@@ -13,10 +13,10 @@ func main() {
 	now := time.Now()
 	totalVotants := 10000000
 	// generate candidats, TO DO : associate voter and vote to gain more time
-	candidats := mocks.CreateCandidatsByName([]string{"Messi", "Cr7", "Zidane", "Xavi", "Iniesta", "De Bruyne", "Mahrez", "Salah", "Mane", "Firmino"})
+	candidats := mocks.CreateCandidatsByName([]string{"LeBron", "Steph", "KD", "Kyrie", "Joker", "Giannis", "Tatum", "Luka", "Embiid", "Butler"})
 	// generate random votants
 	votants := mocks.AsyncGenerateRandomVotants(totalVotants)
-	//votants := mocks.GenerateRandomVotants(totalVotants)
+	// votants := mocks.GenerateRandomVotants(totalVotants)
 	fmt.Println("af mock voter : ", time.Since(now))
 	now = time.Now()
 	// simulate vote
@@ -26,6 +26,7 @@ func main() {
 	// compare results
 	result := methods.TwoRoundSystem(votants, candidats)
 	//candidat, result := methods.CondorcetVoteRound(votants, candidats)
+	//result := methods.ApprovalMethod(votants, candidats)
 	fmt.Println("-------------")
 	//fmt.Println("gagnant : ", candidat)
 	fmt.Println("result : ", result)

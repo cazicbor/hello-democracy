@@ -8,7 +8,6 @@ type Candidat struct {
 type Votant struct {
 	Id   int
 	Name string
-	//Votes bool
 	Vote ScrutinIndiv
 }
 
@@ -37,6 +36,12 @@ type Result struct {
 
 type ScrutinIndiv []Candidat
 
+type ResultDto struct {
+	D Diff
+	L Candidat
+	R Candidat
+}
+
 func (s ScrutinIndiv) IndexOf(c Candidat) int {
 	for pos, v := range s {
 		if v == c {
@@ -44,12 +49,6 @@ func (s ScrutinIndiv) IndexOf(c Candidat) int {
 		}
 	}
 	return -1
-}
-
-type ResultDto struct {
-	D Diff
-	L Candidat
-	R Candidat
 }
 
 func NewResultDto(d Diff, l Candidat, r Candidat) ResultDto {

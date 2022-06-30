@@ -96,8 +96,7 @@ func GeneratePossiblePairDiffsAndResultList(candidats []Candidat) (map[Pair]Diff
 	return possiblePairDiff, duelsWonPerCandidate
 }
 
-// Useful funcs needed to sort maps
-
+// Useful functions needed to sort maps
 func (p ResultList) Len() int {
 	return len(p)
 }

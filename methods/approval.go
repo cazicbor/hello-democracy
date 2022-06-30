@@ -1,36 +1,35 @@
 package methods
 
 import (
+	"fmt"
 	"sort"
 
 	"github.com/cazicbor/hello-democracy/model"
 )
 
-func TwoRoundSystem(voters []model.Votant, c []model.Candidat) model.ResultList {
-	// In this map, the key is the candidate
-	// the value is the number of votes obtained by the candidate
+func ApprovalMethod(voters []model.Votant, candidates []model.Candidat) model.ResultList {
 	count := make(map[model.Candidat]int)
-	iterationNumber := 1
 
 	secondRoundList := make([]model.Candidat, 0)
-	res1 := majorityProcedure(voters, c, count)
 
+	res1 := approvalProcedure(voters, candidates, count)
+	// Case where a candidate is elected in the first round
 	if len(res1) == 1 {
 		return res1
 	} else {
-		iterationNumber++
 		for i := range res1 {
 			secondRoundList = append(secondRoundList, res1[i].Cand)
-			finalRes := TwoRoundSystem(voters, secondRoundList)
+			finalRes := ApprovalMethod(voters, secondRoundList)
 			return finalRes
 		}
 	}
 	return model.ResultList{}
 }
 
-func majorityProcedure(voters []model.Votant, candidates []model.Candidat, res map[model.Candidat]int) model.ResultList {
+func approvalProcedure(voters []model.Votant, candidates []model.Candidat, res map[model.Candidat]int) model.ResultList {
 	resultList := make(model.ResultList, len(res))
 	resPair := make(model.ResultList, 0)
+
 	total := 0
 
 	for _, v := range voters {
@@ -49,6 +48,7 @@ func majorityProcedure(voters []model.Votant, candidates []model.Candidat, res m
 			},
 		})
 	}
+	fmt.Println("result per candidate: ", resultList)
 
 	sort.Sort(sort.Reverse(resultList))
 
@@ -63,8 +63,10 @@ func majorityProcedure(voters []model.Votant, candidates []model.Candidat, res m
 			})
 			return resPair
 		} else {
-			resPair = append(resPair, resultList[0], resultList[1])
-			return resPair
+			for i := 0; i < len(candidates)-1; i++ {
+				resPair = append(resPair, resultList[i])
+				return resPair
+			}
 		}
 	}
 	return resPair
