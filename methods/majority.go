@@ -1,14 +1,12 @@
 package methods
 
 import (
-	"fmt"
 	"sort"
 
 	"github.com/cazicbor/hello-democracy/model"
 )
 
 func TwoRoundSystem(voters []model.Votant, c []model.Candidat) model.ResultList {
-	fmt.Println(c)
 	count := make(map[model.Candidat]int) //key: candidate, value: number of votes got by the candidate
 	secondRoundList := make([]model.Candidat, 0)
 	res1 := majorityProcedure(voters, c, count)
@@ -25,19 +23,17 @@ func TwoRoundSystem(voters []model.Votant, c []model.Candidat) model.ResultList 
 }
 
 func majorityProcedure(voters []model.Votant, candidates []model.Candidat, res map[model.Candidat]int) model.ResultList {
-
 	resultList := make(model.ResultList, len(res))
 	resPair := make(model.ResultList, 0)
-	i := 0
 	total := 0
 
-	for i, v := range voters {
+	for _, v := range voters {
 		// We first deal with the case where the voter does not want to vote
 		// if !v.Votes {
 		// 	fmt.Println("Cette personne a choisi de ne pas voter.")
 		// 	continue
 		// }
-		for _, alternative := range candidates {
+		for i, alternative := range candidates {
 			if v.Vote.IndexOf(candidates[i]) == alternative.Id {
 				res[alternative] += 1
 				total++
@@ -51,7 +47,6 @@ func majorityProcedure(voters []model.Votant, candidates []model.Candidat, res m
 				TotalPoint: v,
 			},
 		})
-		i++
 	}
 
 	sort.Sort(sort.Reverse(resultList))
