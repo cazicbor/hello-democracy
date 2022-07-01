@@ -11,21 +11,21 @@ import (
 	"github.com/cazicbor/hello-democracy/model"
 )
 
-func GenerateRandomVotants(number int) []model.Votant {
-	votants := make([]model.Votant, 0, number)
+func GenerateRandomVoters(number int) []model.Voter {
+	voters := make([]model.Voter, 0, number)
 	for i := 1; i <= number; i++ {
-		votants = append(votants, model.NewVotant(i, "Votant-"+strconv.Itoa(i)))
+		voters = append(voters, model.NewVoter(i, "Votant-"+strconv.Itoa(i)))
 	}
-	return votants
+	return voters
 }
 
-func AsyncGenerateRandomVotants(total int) []model.Votant {
-	votants := make([]model.Votant, 0, total)
+func AsyncGenerateRandomVoters(total int) []model.Voter {
+	voters := make([]model.Voter, 0, total)
 	var wg sync.WaitGroup
-	ch := make(chan []model.Votant, (total/config.SubSliceSize)+1)
+	ch := make(chan []model.Voter, (total/config.SubSliceSize)+1)
 	for j, k := 0, config.SubSliceSize; j+config.SubSliceSize < total+config.SubSliceSize; j += config.SubSliceSize {
 		wg.Add(1)
-		go func(j, k int, ch chan []model.Votant) {
+		go func(j, k int, ch chan []model.Voter) {
 			defer wg.Done()
 			diff := total - j
 			currentSubSliceSize := config.SubSliceSize
@@ -33,9 +33,9 @@ func AsyncGenerateRandomVotants(total int) []model.Votant {
 				currentSubSliceSize = diff
 			}
 
-			subSlice := make([]model.Votant, 0, currentSubSliceSize)
+			subSlice := make([]model.Voter, 0, currentSubSliceSize)
 			for i, l := j, 0; l < currentSubSliceSize; i++ {
-				subSlice = append(subSlice, model.NewVotant(i, "Votant-"+strconv.Itoa(i)))
+				subSlice = append(subSlice, model.NewVoter(i, "Voter-"+strconv.Itoa(i)))
 				l++
 			}
 
@@ -50,50 +50,50 @@ func AsyncGenerateRandomVotants(total int) []model.Votant {
 	close(ch)
 
 	for v := range ch {
-		votants = append(votants, v...)
+		voters = append(voters, v...)
 	}
-	return votants
+	return voters
 }
 
-func CreateCandidatsByName(candidateNames []string) []model.Candidat {
-	candidats := make([]model.Candidat, 0, len(candidateNames))
-	max := len(candidateNames) - 1
+func CreateCandidatesByName(candidatesNames []string) []model.Candidate {
+	candidates := make([]model.Candidate, 0, len(candidatesNames))
+	max := len(candidatesNames) - 1
 	for i := max; i >= 0; i-- {
-		candidats = append(candidats, model.NewCandidat(i, candidateNames[i]))
+		candidates = append(candidates, model.NewCandidate(i, candidatesNames[i]))
 	}
-	return candidats
+	return candidates
 }
 
-func SimulateRandomVotes(votants []model.Votant, candidats []model.Candidat) {
-	possibleVotes := generateAllPermutations(candidats)
+func SimulateRandomVotes(voters []model.Voter, candidates []model.Candidate) {
+	possibleVotes := generateAllPermutations(candidates)
 	rand.Seed(time.Now().UnixNano())
-	max := len(votants) - 1
+	max := len(voters) - 1
 	for i := max; i >= 0; i-- {
-		votants[i].Vote = possibleVotes[rand.Intn(len(possibleVotes))]
+		voters[i].Vote = possibleVotes[rand.Intn(len(possibleVotes))]
 	}
 }
 
-func generateAllPermutations(candidats []model.Candidat) [][]model.Candidat {
-	result := [][]model.Candidat{}
-	perm(candidats, &result)
+func generateAllPermutations(candidates []model.Candidate) [][]model.Candidate {
+	result := [][]model.Candidate{}
+	perm(candidates, &result)
 	return result
 }
 
-func perm(a []model.Candidat, result *[][]model.Candidat) {
-	generatePermutations(a, result, 0)
+func perm(candidates []model.Candidate, result *[][]model.Candidate) {
+	generatePermutations(candidates, result, 0)
 }
 
-func generatePermutations(a []model.Candidat, result *[][]model.Candidat, i int) {
-	if i > len(a) {
-		comb := []model.Candidat{}
-		comb = append(comb, a...)
+func generatePermutations(candidates []model.Candidate, result *[][]model.Candidate, i int) {
+	if i > len(candidates) {
+		comb := []model.Candidate{}
+		comb = append(comb, candidates...)
 		*result = append(*result, comb)
 		return
 	}
-	generatePermutations(a, result, i+1)
-	for j := i + 1; j < len(a); j++ {
-		a[i], a[j] = a[j], a[i]
-		generatePermutations(a, result, i+1)
-		a[i], a[j] = a[j], a[i]
+	generatePermutations(candidates, result, i+1)
+	for j := i + 1; j < len(candidates); j++ {
+		candidates[i], candidates[j] = candidates[j], candidates[i]
+		generatePermutations(candidates, result, i+1)
+		candidates[i], candidates[j] = candidates[j], candidates[i]
 	}
 }

@@ -6,26 +6,27 @@ import (
 	"github.com/cazicbor/hello-democracy/model"
 )
 
-func ApprovalMethod(voters []model.Votant, candidates []model.Candidat) model.ResultList {
-	count := make(map[model.Candidat]int)
+func ApprovalMethod(voters []model.Voter, candidates []model.Candidate) model.ResultList {
+	count := make(map[model.Candidate]int)
 
-	secondRoundList := make([]model.Candidat, 0)
+	secondRoundList := make([]model.Candidate, 0)
 
-	res1 := approvalProcedure(voters, candidates, count)
+	firstRoundResult := approvalProcedure(voters, candidates, count)
 	// Case where a candidate is elected in the first round
-	if len(res1) == 1 {
-		return res1
+	if len(firstRoundResult) == 1 {
+		return firstRoundResult
 	} else {
-		for i := range res1 {
-			secondRoundList = append(secondRoundList, res1[i].Cand)
-			finalRes := ApprovalMethod(voters, secondRoundList)
-			return finalRes
+		for i := range firstRoundResult {
+			secondRoundList = append(secondRoundList, firstRoundResult[i].Cand)
+			// Same model as for the majority run off: recursive call
+			finalResult := ApprovalMethod(voters, secondRoundList)
+			return finalResult
 		}
 	}
 	return model.ResultList{}
 }
 
-func approvalProcedure(voters []model.Votant, candidates []model.Candidat, res map[model.Candidat]int) model.ResultList {
+func approvalProcedure(voters []model.Voter, candidates []model.Candidate, res map[model.Candidate]int) model.ResultList {
 	resultList := make(model.ResultList, len(res))
 	resPair := make(model.ResultList, 0)
 
@@ -43,30 +44,16 @@ func approvalProcedure(voters []model.Votant, candidates []model.Candidat, res m
 		resultList = append(resultList, model.ResultPerCandidate{
 			Cand: k,
 			Res: model.Result{
-				TotalPoint: v,
+				TotalPoints: v,
 			},
 		})
 	}
 
 	sort.Sort(sort.Reverse(resultList))
 
-	for cand := range resultList {
-		percentage := (resultList[cand].Res.TotalPoint * 100) / total
-		if percentage > 50 {
-			resPair = append(resPair, model.ResultPerCandidate{
-				Cand: resultList[0].Cand,
-				Res: model.Result{
-					TotalPoint: resultList[0].Res.TotalPoint,
-				},
-			})
-			return resPair
-		} else {
-			for i := 0; i < len(candidates)-1; i++ {
-				// Difference with the majority method is here
-				resPair = append(resPair, resultList[i])
-				return resPair
-			}
-		}
+	resPair, shouldReturn, returnValue := model.Ballot("approval", resultList, total, resPair, candidates)
+	if shouldReturn {
+		return returnValue
 	}
 	return resPair
 }

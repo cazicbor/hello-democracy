@@ -7,13 +7,13 @@ import (
 	"github.com/cazicbor/hello-democracy/config"
 )
 
-func SetPossiblePairDiffValue(possiblePairDiff map[Pair]Diff, votes []Votant) {
+func SetPossiblePairDiffValue(possiblePairDiff map[Pair]Diff, votes []Voter) {
 	var wg sync.WaitGroup
 	ch := make(chan ResultDto, len(possiblePairDiff))
-	// will create len(possibleCase) go routines
+
 	for cPair := range possiblePairDiff {
 		wg.Add(1)
-		go func(cPair Pair, votes []Votant) {
+		go func(cPair Pair, votes []Voter) {
 			defer wg.Done()
 			ch <- NewResultDto(GetDiff(cPair.L, cPair.R, votes))
 		}(cPair, votes)
@@ -24,25 +24,25 @@ func SetPossiblePairDiffValue(possiblePairDiff map[Pair]Diff, votes []Votant) {
 	for v := range ch {
 		possiblePairDiff[Pair{L: v.L, R: v.R}] = v.D
 	}
-	fmt.Println("total go routine on main :", len(possiblePairDiff))
+	fmt.Println("total goroutines on main:", len(possiblePairDiff))
 }
 
-func SetResultListValue(possiblePairDiff map[Pair]Diff, resultList map[Candidat]*Result) {
-	for candidats, diff := range possiblePairDiff {
+func SetResultListValue(possiblePairDiff map[Pair]Diff, resultList map[Candidate]*Result) {
+	for candidates, diff := range possiblePairDiff {
 		if diff.Ldiff >= diff.Rdiff {
-			resultList[candidats.L].DuelWon++
-			resultList[candidats.L].TotalPoint += diff.Ldiff
-			resultList[candidats.L].WonAgainst = append(resultList[candidats.L].WonAgainst, candidats.R)
+			resultList[candidates.L].DuelsWon++
+			resultList[candidates.L].TotalPoints += diff.Ldiff
+			resultList[candidates.L].WonAgainst = append(resultList[candidates.L].WonAgainst, candidates.R)
 
 		} else {
-			resultList[candidats.R].DuelWon++
-			resultList[candidats.R].TotalPoint += diff.Rdiff
-			resultList[candidats.R].WonAgainst = append(resultList[candidats.R].WonAgainst, candidats.L)
+			resultList[candidates.R].DuelsWon++
+			resultList[candidates.R].TotalPoints += diff.Rdiff
+			resultList[candidates.R].WonAgainst = append(resultList[candidates.R].WonAgainst, candidates.L)
 		}
 	}
 }
 
-func GetDiff(ref, adv Candidat, votes []Votant) (Diff, Candidat, Candidat) {
+func GetDiff(ref, adv Candidate, votes []Voter) (Diff, Candidate, Candidate) {
 	diff := Diff{}
 	var diffWg sync.WaitGroup
 	total := len(votes)
@@ -56,7 +56,7 @@ func GetDiff(ref, adv Candidat, votes []Votant) (Diff, Candidat, Candidat) {
 		}
 		subSlice := votes[limit:j]
 		diffWg.Add(1)
-		go func(j int, subSlice []Votant) {
+		go func(j int, subSlice []Voter) {
 			defer diffWg.Done()
 			currentDiff := Diff{}
 			subSliceMax := len(subSlice) - 1
@@ -78,21 +78,21 @@ func GetDiff(ref, adv Candidat, votes []Votant) (Diff, Candidat, Candidat) {
 		diff.Ldiff += v.Ldiff
 		diff.Rdiff += v.Rdiff
 	}
-	// return pair with result for the channel
+	// Returns a pair with result of the channel
 	return diff, ref, adv
 }
 
-func GeneratePossiblePairDiffsAndResultList(candidats []Candidat) (map[Pair]Diff, map[Candidat]*Result) {
+func GeneratePossiblePairDiffsAndResultList(candidats []Candidate) (map[Pair]Diff, map[Candidate]*Result) {
 	possiblePairDiff := make(map[Pair]Diff)
-	duelsWonPerCandidate := make(map[Candidat]*Result)
+	duelsWonPerCandidate := make(map[Candidate]*Result)
 	for i := range candidats {
 		for j := i + 1; j < len(candidats); j++ {
 			possiblePairDiff[Pair{L: candidats[i], R: candidats[j]}] = Diff{}
 		}
-		duelsWonPerCandidate[candidats[i]] = &Result{DuelWon: 0, TotalPoint: 0}
+		duelsWonPerCandidate[candidats[i]] = &Result{DuelsWon: 0, TotalPoints: 0}
 	}
 
-	fmt.Println("cas possible", len(possiblePairDiff))
+	fmt.Println("possible cases: ", len(possiblePairDiff))
 	return possiblePairDiff, duelsWonPerCandidate
 }
 
@@ -106,5 +106,31 @@ func (p ResultList) Swap(i, j int) {
 }
 
 func (p ResultList) Less(i, j int) bool {
-	return p[i].Res.TotalPoint < p[j].Res.TotalPoint
+	return p[i].Res.TotalPoints < p[j].Res.TotalPoints
+}
+
+func Ballot(votingMethod string, resultList ResultList, total int, resPair ResultList, candidates []Candidate) (ResultList, bool, ResultList) {
+	for cand := range resultList {
+		percentage := (resultList[cand].Res.TotalPoints * 100) / total
+		if percentage > 50 {
+			resPair = append(resPair, ResultPerCandidate{
+				Cand: resultList[0].Cand,
+				Res: Result{
+					TotalPoints: resultList[0].Res.TotalPoints,
+				},
+			})
+			return nil, true, resPair
+		} else {
+			for i := 0; i < len(candidates)-1; i++ {
+				// Case disjunction: majority run-off and approval method
+				if votingMethod == "approval" {
+					resPair = append(resPair, resultList[i])
+				} else if votingMethod == "majority" {
+					resPair = append(resPair, resultList[0], resultList[1])
+				}
+				return nil, true, resPair
+			}
+		}
+	}
+	return resPair, false, nil
 }

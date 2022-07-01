@@ -4,39 +4,44 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/cazicbor/hello-democracy/config"
 	"github.com/cazicbor/hello-democracy/methods"
 	"github.com/cazicbor/hello-democracy/mocks"
 )
 
 func main() {
+
 	fmt.Println("-------------")
 	now := time.Now()
-	totalVotants := 10000000
-	// generate candidats, TO DO : associate voter and vote to gain more time
-	candidats := mocks.CreateCandidatsByName([]string{"LeBron", "Steph", "KD", "Kyrie", "Joker", "Giannis", "Tatum", "Luka", "Embiid", "Butler"})
-	// generate random votants
-	votants := mocks.AsyncGenerateRandomVotants(totalVotants)
-	// votants := mocks.GenerateRandomVotants(totalVotants)
+	candidates := mocks.CreateCandidatesByName([]string{"LeBron", "Steph", "KD", "Kyrie", "Joker", "Giannis", "Tatum", "Luka", "Embiid", "Butler"})
+
+	// Generatation of random voters
+	voters := mocks.AsyncGenerateRandomVoters(config.TotalVoters)
+	// voters := mocks.GenerateRandomVoters(config.TotalVoters)
 	fmt.Println("af mock voter : ", time.Since(now))
 	now = time.Now()
-	// simulate vote
-	mocks.SimulateRandomVotes(votants, candidats)
+
+	// Simulate vote
+	mocks.SimulateRandomVotes(voters, candidates)
 	fmt.Println("af mock votes : ", time.Since(now))
 	now = time.Now()
-	// compare results
-	resultMajority := methods.TwoRoundSystem(votants, candidats)
-	winnerCondorcet, resultCondorcet := methods.CondorcetVoteRound(votants, candidats)
-	resultApproval := methods.ApprovalMethod(votants, candidats)
-	winnerCopeland, scoreCopeland := methods.Copeland(votants, candidats)
+
+	// Compare results by method
+	majorityResult := methods.TwoRoundSystem(voters, candidates)
+	condorcetWinner, condorcetResult := methods.CondorcetVoteRound(voters, candidates)
+	approvalResult := methods.ApprovalMethod(voters, candidates)
+	copelandWinner, copelandScore := methods.Copeland(voters, candidates)
+
 	fmt.Println("-------------")
-	fmt.Println("vainqueur majorité à 2 tours : ", resultMajority)
+	fmt.Println("Majority run-off winner : ", majorityResult)
 	fmt.Println("-------------")
-	fmt.Println("vainqueur de condorcet : ", winnerCondorcet)
-	fmt.Println("résultat condorcet : ", resultCondorcet)
+	fmt.Println("Condorcet winner criterion : ", condorcetWinner)
+	fmt.Println("Condorcet result: ", condorcetResult)
 	fmt.Println("-------------")
-	fmt.Println("gagnant par approbation : ", resultApproval)
+	fmt.Println("Approval winner : ", approvalResult)
 	fmt.Println("-------------")
-	fmt.Println("gagnant copeland : ", winnerCopeland)
-	fmt.Println("score de copeland : ", scoreCopeland)
+	fmt.Println("Copeland winner : ", copelandWinner)
+	fmt.Println("Copeland score: ", copelandScore)
+
 	fmt.Println("af calc : ", time.Since(now))
 }

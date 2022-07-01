@@ -1,11 +1,11 @@
 package model
 
-type Candidat struct {
+type Candidate struct {
 	Id   int
 	Name string
 }
 
-type Votant struct {
+type Voter struct {
 	Id   int
 	Name string
 	Vote ScrutinIndiv
@@ -17,32 +17,32 @@ type Diff struct {
 }
 
 type Pair struct {
-	L Candidat
-	R Candidat
+	L Candidate
+	R Candidate
 }
 
 type ResultPerCandidate struct {
-	Cand Candidat
+	Cand Candidate
 	Res  Result
 }
 
 type ResultList []ResultPerCandidate
 
 type Result struct {
-	DuelWon    int
-	TotalPoint int
-	WonAgainst []Candidat
+	DuelsWon    int
+	TotalPoints int
+	WonAgainst  []Candidate
 }
 
-type ScrutinIndiv []Candidat
+type ScrutinIndiv []Candidate
 
 type ResultDto struct {
 	D Diff
-	L Candidat
-	R Candidat
+	L Candidate
+	R Candidate
 }
 
-func (s ScrutinIndiv) IndexOf(c Candidat) int {
+func (s ScrutinIndiv) IndexOf(c Candidate) int {
 	for pos, v := range s {
 		if v == c {
 			return pos
@@ -51,7 +51,7 @@ func (s ScrutinIndiv) IndexOf(c Candidat) int {
 	return -1
 }
 
-func NewResultDto(d Diff, l Candidat, r Candidat) ResultDto {
+func NewResultDto(d Diff, l Candidate, r Candidate) ResultDto {
 	return ResultDto{
 		D: d,
 		L: l,
@@ -59,15 +59,15 @@ func NewResultDto(d Diff, l Candidat, r Candidat) ResultDto {
 	}
 }
 
-func NewCandidat(id int, name string) Candidat {
-	return Candidat{
+func NewCandidate(id int, name string) Candidate {
+	return Candidate{
 		Id:   id,
 		Name: name,
 	}
 }
 
-func NewVotant(id int, name string) Votant {
-	return Votant{
+func NewVoter(id int, name string) Voter {
+	return Voter{
 		Id:   id,
 		Name: name,
 	}

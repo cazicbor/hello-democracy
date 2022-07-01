@@ -1,4 +1,6 @@
 package config
 
-// beware of the subslice size, the lower it is, more it create goroutines
-const SubSliceSize = 500000
+const (
+	SubSliceSize = 500000 // About the subslice size: the lower it is, the more it'll create goroutines
+	TotalVoters  = 10000000
+)
