@@ -27,6 +27,5 @@ func CondorcetVoteRound(votes []model.Votant, candidats []model.Candidat) (model
 			candidat = r
 		}
 	}
-
 	return candidat, result
 }

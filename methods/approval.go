@@ -1,7 +1,6 @@
 package methods
 
 import (
-	"fmt"
 	"sort"
 
 	"github.com/cazicbor/hello-democracy/model"
@@ -48,7 +47,6 @@ func approvalProcedure(voters []model.Votant, candidates []model.Candidat, res m
 			},
 		})
 	}
-	fmt.Println("result per candidate: ", resultList)
 
 	sort.Sort(sort.Reverse(resultList))
 
@@ -64,6 +62,7 @@ func approvalProcedure(voters []model.Votant, candidates []model.Candidat, res m
 			return resPair
 		} else {
 			for i := 0; i < len(candidates)-1; i++ {
+				// Difference with the majority method is here
 				resPair = append(resPair, resultList[i])
 				return resPair
 			}
