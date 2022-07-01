@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"fmt"
@@ -7,10 +7,18 @@ import (
 	"github.com/cazicbor/hello-democracy/config"
 	"github.com/cazicbor/hello-democracy/methods"
 	"github.com/cazicbor/hello-democracy/mocks"
+	"github.com/spf13/cobra"
 )
 
-func main() {
+var majorityCmd = &cobra.Command{
+	Use:   "majority",
+	Short: "Use majority run-off voting method",
+	Run: func(cmd *cobra.Command, args []string) {
+		Run()
+	},
+}
 
+func Run() {
 	fmt.Println("-------------")
 	now := time.Now()
 	candidates := mocks.CreateCandidatesByName([]string{"LeBron", "Steph", "KD", "Kyrie", "Joker", "Giannis", "Tatum", "Luka", "Embiid", "Butler"})
@@ -26,22 +34,10 @@ func main() {
 	fmt.Println("af mock votes : ", time.Since(now))
 	now = time.Now()
 
-	// Compare results by method
 	majorityResult := methods.TwoRoundSystem(voters, candidates)
-	condorcetWinner, condorcetResult := methods.CondorcetVoteRound(voters, candidates)
-	approvalResult := methods.ApprovalMethod(voters, candidates)
-	copelandWinner, copelandScore := methods.Copeland(voters, candidates)
 
 	fmt.Println("-------------")
 	fmt.Println("Majority run-off winner : ", majorityResult)
-	fmt.Println("-------------")
-	fmt.Println("Condorcet winner criterion : ", condorcetWinner)
-	fmt.Println("Condorcet result: ", condorcetResult)
-	fmt.Println("-------------")
-	fmt.Println("Approval winner : ", approvalResult)
-	fmt.Println("-------------")
-	fmt.Println("Copeland winner : ", copelandWinner)
-	fmt.Println("Copeland score: ", copelandScore)
 
 	fmt.Println("af calc : ", time.Since(now))
 }

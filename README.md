@@ -4,12 +4,18 @@ Implementation of various voting methods using Golang
 
 ## External packages
 
-No external package used here, only standard library
+[cobra] (https://pkg.go.dev/github.com/spf13/cobra@v1.5.0) for creating CLI
 
 ## Launch project
 
-Run `go run cmd/main.go` to launch the project
+Run `go run main.go methodCmd` to launch the project
 
+Available CLI (replace `methodCmd` by one of the following):
+- majority
+- approval
+- condorcet
+- copeland
+- full
 
 ## Presentation of the different voting methods
 
