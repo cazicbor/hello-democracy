@@ -4,7 +4,7 @@ Implementation of various voting methods using Golang
 
 ## External packages
 
-[cobra] (https://pkg.go.dev/github.com/spf13/cobra@v1.5.0) for creating CLI
+[cobra](https://pkg.go.dev/github.com/spf13/cobra@v1.5.0) for creating CLI
 
 ## Launch project
 
