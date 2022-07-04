@@ -6,13 +6,13 @@ import (
 	"github.com/cazicbor/hello-democracy/model"
 )
 
-func TwoRoundSystem(voters []model.Voter, c []model.Candidate) model.ResultList {
+func TwoRoundSystem(voters []model.Voter, candidates []model.Candidate) model.ResultList {
 	// In this map, the key is the candidate
 	// the value is the number of votes obtained by the candidate
 	count := make(map[model.Candidate]int)
 
 	secondRoundList := make([]model.Candidate, 0)
-	firstRoundResult := majorityProcedure(voters, c, count)
+	firstRoundResult := majorityProcedure(voters, candidates, count)
 
 	if len(firstRoundResult) == 1 {
 		return firstRoundResult
