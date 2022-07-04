@@ -6,8 +6,8 @@ func Copeland(voters []model.Voter, candidates []model.Candidate) (model.Candida
 	numberOfDuels := len(candidates) - 1
 	candidat, result := CondorcetVoteRound(voters, candidates)
 	duelLost := numberOfDuels - result.DuelsWon
-	copelandScore := result.DuelsWon - duelLost
 
-	return candidat, copelandScore
+	// result.DuelsWon - duelLost corresponds to the Copeland score
+	return candidat, result.DuelsWon - duelLost
 
 }
