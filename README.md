@@ -31,4 +31,6 @@ Selects the candidate who wins a majority of the vote in every head-to-head elec
 ### Copeland's method
 Each voter ranks candidates in order of preference. A candidate A has majority preference over B if more voters prefer A to B than prefer B to A. For each candidate is calculated the Copeland score which is the number of rivals over whom the candidate is preferred, minus the candidate's number of losses. This method elects a Condorcet winner. 
 
+Article link (in French): https://blog.coddity.com/articles/hello-democracy
+
 
